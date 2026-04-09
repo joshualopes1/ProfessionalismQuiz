@@ -286,7 +286,7 @@ function render(){
       <div style="text-align:center;padding:1rem 0">
         <div style="font-size:56px;font-weight:900;color:#0a1f44;line-height:1">${proC}/10</div>
         <div style="font-size:14px;color:#666;margin:8px 0 14px">professional choices</div>
-        <div>${proC>0?`<span class="pill pp">${proC} good</span>`:''} ${warnC>0?`<span class="pill pw">${warnC} okay</span>`:''} ${badC>0?`<span class="pill pbd">${badC} needs work</span>`:''}</div>
+        <div>${proC>0?`<span class="pill pp">${proC}</span>`:''} ${warnC>0?`<span class="pill pw">${warnC}</span>`:''} ${badC>0?`<span class="pill pbd">${badC}</span>`:''}</div>
         <p style="font-size:14px;color:#333;line-height:1.8;margin:16px auto;max-width:480px">${msg}</p>
         <div class="ref-box ${rc}"><strong>Next step</strong>Open the professionalism pamphlet and focus on the topics where you struggled.</div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
@@ -343,3 +343,16 @@ function submitAnswer(){
 }
 
 renderIntro();
+
+document.addEventListener('keydown', function(e) {
+  if (cur >= 10) return; // Don't navigate on results page
+  if (e.key === 'ArrowLeft' && cur > 0) {
+    cur--;
+    render();
+  } else if (e.key === 'ArrowRight' && submitted[cur]) {
+    cur++;
+    render();
+  } else if (e.key === 'Enter' && sel[cur] !== null && !submitted[cur]) {
+    submitAnswer();
+  }
+});
