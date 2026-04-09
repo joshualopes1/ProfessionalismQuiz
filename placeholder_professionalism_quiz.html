@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professionalism Quiz Placeholder</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #0a1f44; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: #ffffff; border-radius: 16px; width: 100%; max-width: 700px; padding: 32px; box-shadow: 0 24px 50px rgba(10, 31, 68, 0.14); }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header .tag { display: inline-flex; padding: 8px 12px; background: #e6f1fb; color: #185fa5; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .header h1 { font-size: 24px; margin-bottom: 10px; }
+    .header p { color: #555; line-height: 1.6; }
+    .scene { background: #f5f8fb; border-left: 4px solid #185fa5; padding: 16px; border-radius: 12px; margin-bottom: 22px; color: #33415c; }
+    .qlabel { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #6b7a95; margin-bottom: 10px; }
+    .qtext { font-size: 18px; font-weight: 700; margin-bottom: 18px; line-height: 1.5; }
+    .opts { display: grid; gap: 12px; margin-bottom: 20px; }
+    .opt { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1.5px solid #dde6ef; border-radius: 12px; background: #fff; cursor: pointer; transition: all 0.15s; }
+    .opt:hover { border-color: #b5d4f4; background: #f5f8fb; }
+    .opt.picked { border-color: #185fa5; background: #e6f1fb; }
+    .ol { min-width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #b5d4f4; color: #185fa5; font-weight: 700; display: grid; place-items: center; }
+    .ot { flex: 1; font-size: 15px; line-height: 1.6; }
+    .nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .btn { border: 1.5px solid #dde6ef; border-radius: 10px; padding: 12px 20px; background: transparent; font-weight: 700; color: #0a1f44; cursor: pointer; transition: background 0.15s; }
+    .btn:hover:not(:disabled) { background: #f5f8fb; }
+    .btn:disabled { opacity: 0.35; cursor: default; }
+    .nxt-p { background: #185fa5; color: #fff; border-color: #185fa5; }
+    .submit-btn { width: 100%; padding: 13px 16px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.15s; }
+    .sub-p { background: #185fa5; color: #fff; }
+    .sub-disabled { background: #dde6ef; color: #7a8495; cursor: default; }
+    .reveal { margin-top: 18px; border-radius: 12px; padding: 16px; background: #eaf3de; border: 1.5px solid #3b6d11; }
+    .rtitle { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; color: #27500a; }
+    .rbody { line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <span class="tag">Professionalism Placeholder</span>
+      <h1>Professionalism Quiz</h1>
+      <p>This is a simple placeholder quiz. Replace the questions, options, and scoring with your own content later.</p>
+    </div>
+
+    <div class="scene">
+      This quiz contains a few sample professionalism questions. Use it as a starting point for your project.
+    </div>
+
+    <div class="qlabel" id="question-number"></div>
+    <div class="qtext" id="question-text"></div>
+    <div class="opts" id="options"></div>
+
+    <div class="nav">
+      <button class="btn" id="prev-btn">Previous</button>
+      <button class="btn nxt-p" id="next-btn">Next</button>
+    </div>
+
+    <button id="submit-btn" class="submit-btn sub-disabled" disabled>Submit Quiz</button>
+    <div id="result-box" class="reveal" style="display:none;"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "If you arrive late to a meeting, what is the most professional response?",
+        options: [
+          "Ignore it and join quietly.",
+          "Apologize briefly and explain what happened.",
+          "Blame traffic loudly.",
+          "Wait until the meeting ends to mention it."
+        ],
+        answer: 1
+      },
+      {
+        question: "How should you give feedback to a teammate?",
+        options: [
+          "Point out mistakes publicly in a group chat.",
+          "Send a short, respectful message and offer to talk privately.",
+          "Wait until the next review cycle.",
+          "Use emojis and informal language."
+        ],
+        answer: 1
+      },
+      {
+        question: "What is the best way to handle an unclear instruction from a manager?",
+        options: [
+          "Guess what they mean and start immediately.",
+          "Ask a quick clarifying question before continuing.",
+          "Do the easiest part first and worry about the rest later.",
+          "Ignore it and hope someone else handles it."
+        ],
+        answer: 1
+      }
+    ];
+
+    let currentIndex = 0;
+    const selectedAnswers = Array(quizData.length).fill(null);
+
+    const questionNumber = document.getElementById('question-number');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultBox = document.getElementById('result-box');
+
+    function renderQuestion() {
+      const item = quizData[currentIndex];
+      questionNumber.textContent = `Question ${currentIndex + 1} of ${quizData.length}`;
+      questionText.textContent = item.question;
+      optionsContainer.innerHTML = '';
+
+      item.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'opt';
+        if (selectedAnswers[currentIndex] === index) {
+          button.classList.add('picked');
+        }
+        button.innerHTML = `<span class="ol">${String.fromCharCode(65 + index)}</span><span class="ot">${option}</span>`;
+        button.addEventListener('click', () => {
+          selectedAnswers[currentIndex] = index;
+          renderQuestion();
+          updateSubmitState();
+        });
+        optionsContainer.appendChild(button);
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === quizData.length - 1;
+    }
+
+    function updateSubmitState() {
+      const allAnswered = selectedAnswers.every(answer => answer !== null);
+      submitBtn.disabled = !allAnswered;
+      submitBtn.className = allAnswered ? 'submit-btn sub-p' : 'submit-btn sub-disabled';
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex -= 1;
+        renderQuestion();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex < quizData.length - 1) {
+        currentIndex += 1;
+        renderQuestion();
+      }
+    });
+
+    submitBtn.addEventListener('click', () => {
+      const score = selectedAnswers.reduce((sum, answer, index) => {
+        return sum + (answer === quizData[index].answer ? 1 : 0);
+      }, 0);
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="rtitle">Quiz Complete</div>
+        <div class="rbody">You scored ${score} out of ${quizData.length}.\n<br><br>To edit this quiz, update the quizData array in the script.</div>
+      `;
+    });
+
+    renderQuestion();
+    updateSubmitState();
+  </script>
+</body>
+</html>
