@@ -289,7 +289,7 @@ function render(){
         <div style="font-size:56px;font-weight:900;color:#0a1f44;line-height:1">${totalScore}/10</div>
         <div>${proC>0?`<span class="pill pp">${proC}</span>`:''} ${warnC>0?`<span class="pill pw">${warnC}</span>`:''} ${badC>0?`<span class="pill pbd">${badC}</span>`:''}</div>
         <p style="font-size:14px;color:#333;line-height:1.8;margin:16px auto;max-width:480px">${msg}</p>
-        <div class="ref-box ${rc}"><strong>Next step</strong>Open the professionalism pamphlet and focus on the topics where you struggled.</div>
+        <div class="ref-box ${rc}"><strong>Next step</strong>Open the professionalism pamphlet and focus on the topics where you struggled. Then try again.</div>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">
           <button class="btn" onclick="cur=0;sel=new Array(10).fill(null);submitted=new Array(10).fill(false);render()">Retake this level</button>
           <button class="btn" onclick="mode=mode==='student'?'pro':'student';cur=0;sel=new Array(10).fill(null);submitted=new Array(10).fill(false);render()">Try ${mode==='student'?'professional':'student'} level</button>
@@ -305,17 +305,38 @@ function render(){
   const isSubmitted=submitted[cur];
 
   const optsHTML=q.opts.map((o,i)=>`
-    <div class="opt${s===i&&!isSubmitted?' '+pickClass:s===i&&isSubmitted?' '+pickClass:''}" onclick="${isSubmitted?'':' choose('+i+')'}" style="${isSubmitted&&s!==i?'opacity:0.5;cursor:default':''}">
+    <div class="opt${s===i&&!isSubmitted?' '+pickClass:s===i&&isSubmitted?' '+pickClass:''}${isSubmitted && o.type === 'pro' ? ' correct' : ''}" onclick="${isSubmitted?'':' choose('+i+')'}" style="${isSubmitted&&s!==i?'opacity:0.5;cursor:default':''}">
       <div class="ol">${o.l}</div>
       <div class="ot">${o.t}</div>
     </div>`).join('');
 
   const submitHTML=isSubmitted
-    ?`<div class="reveal ${gtc(q.opts[s].type)}">
-        <div class="rtitle">${gtl(q.opts[s].type, cur)}</div>
-        <div class="rbody">${q.opts[s].result}</div>
-        <div class="rtip">${q.opts[s].tip}</div>
-      </div>`
+    ?(() => {
+        const userOpt = q.opts[s];
+        const userType = userOpt.type;
+        const correctIndex = q.opts.findIndex(o => o.type === 'pro');
+        const correctOpt = q.opts[correctIndex];
+        if(userType === 'pro'){
+          return `<div class="reveal ${gtc(userType)}">
+        <div class="rtitle">${gtl(userType, cur)}</div>
+        <div class="rbody">${userOpt.result}</div>
+        <div class="rtip">${userOpt.tip}</div>
+      </div>`;
+        }else{
+          return `
+      <div class="reveal ${gtc(userType)}">
+        <div class="rtitle">Your choice: ${gtl(userType, cur)}</div>
+        <div class="rbody">${userOpt.result}</div>
+        <div class="rtip">${userOpt.tip}</div>
+      </div>
+      <div class="reveal rp">
+        <div class="rtitle">Correct choice: ${gtl('pro', cur)}</div>
+        <div class="rbody">${correctOpt.result}</div>
+        <div class="rtip">${correctOpt.tip}</div>
+      </div>
+    `;
+        }
+      })()
     :`<button class="${s!==null?'submit-btn '+subClass:'submit-btn sub-disabled'}" onclick="${s!==null?'submitAnswer()':''}">${s!==null?'Submit answer':'Pick an answer first'}</button>`;
 
   area.innerHTML=`
