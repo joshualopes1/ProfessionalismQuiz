@@ -1,8 +1,8 @@
 const SQ=[
   {
     topic:"Punctuality",diff:"easy",
-    scene:"It's your first day at a summer internship. You planned to leave at 8:30 for a 9 AM start. Your roommate was in the bathroom forever. You end up leaving at 8:55 and walk in at 9:06, a little flustered.",
-    q:"What do you do when you walk in?",
+    scene:"It's your first day at a summer internship. You planned to leave at 8:30 for a 9 AM start. Your roommate was in the bathroom forever. You end up leaving at 8:55 and walk in at 9:06.",
+    q:"What should you do?",
     opts:[
       {l:"A",t:"Walk straight to your desk, avoid eye contact, and act like nothing happened.",type:"bad",result:"Your supervisor noticed the second you walked in. She doesn't say anything but she's already forming an opinion. Avoiding eye contact made it more obvious, not less.",tip:"Saying nothing about being late comes across as a lack of awareness. A quick acknowledgment goes a long way."},
       {l:"B",t:"Find your supervisor, tell her you're a few minutes late, give a short apology, and get to work.",type:"pro",result:"Your supervisor nods. 'Happens to everyone, just try to be early going forward.' You've already handled yourself better than most people do on their first day.",tip:"A short honest acknowledgment is always better than a long excuse."},
@@ -56,7 +56,7 @@ const SQ=[
   },
   {
     topic:"Ethical behavior",diff:"hard",
-    scene:"High stakes final exam. Professor stepped out for a few minutes. The person next to you slides their paper in your direction on two questions you're genuinely stuck on. Nobody seems to notice. The camera is pointed at the door.",
+    scene:"High stakes final exam. Professor stepped out for a few minutes. The person next to you slides their paper in your direction on two questions you're genuinely stuck on. Nobody seems to notice.",
     q:"What do you do?",
     opts:[
       {l:"A",t:"Glance over real quick. Just for one answer. You've worked hard all semester.",type:"bad",result:"You get the answer. You also spend the next few days half-convinced the professor reviewed the footage even though she didn't. The grade ends up fine. The feeling doesn't go away as fast.",tip:"One bad call in a weak moment tends to stick with you longer than the situation itself."},
@@ -136,13 +136,13 @@ const PQ=[
   },
   {
     topic:"Communication",diff:"hard",
-    scene:"Your manager sends an email Friday at 6 PM about a big scope change on a project your team has been working on for six weeks. The VP is copied. The change is real and your concerns about the timeline are legitimate.",
+    scene:"Your manager sends you an <strong>urgent</strong> email on Friday evening about a critical client issue that needs immediate attention. The email is cc'd to the CEO. Your concerns about the impact are valid.",
     q:"How do you respond?",
     opts:[
-      {l:"A",t:"Reply all right away with a breakdown of every risk and every reason the timeline won't work. It's 7 PM on a Friday.",type:"bad",result:"The VP sees a long reactive email sent Friday evening before anyone has even tried to work through it. Your manager calls you Monday. 'That email made us look like we're panicking. I needed you to think before you responded.'",tip:"The same information lands completely differently depending on when and how you send it. Friday night is not the time."},
-      {l:"B",t:"Send a short reply saying you received it and you'll have a response with your questions ready Monday morning.",type:"pro",result:"Your manager and the VP see a calm acknowledgment. Monday your response is clear and organized. The VP says to your manager afterward that the team communicates well.",tip:"A brief acknowledgment buys you time to actually think and signals that you're steady. Both things matter."},
-      {l:"C",t:"Forward it to your whole team with 'thoughts??' and let everyone respond over the weekend.",type:"bad",result:"Your manager has four separate emails from team members by Monday with varying levels of stress. 'Why did you send that before we talked?' she asks.",tip:"Distributing something unclear before you've worked through it yourself just spreads the confusion around."},
-      {l:"D",t:"Process it over the weekend and come in Monday with specific questions and a proposed adjustment to the plan.",type:"pro",result:"Your manager is relieved. 'This is exactly what I needed.' Two of your three adjustments get approved. You came in with solutions instead of problems.",tip:"Taking time to think before you respond isn't slow. It's discipline."}
+      {l:"A",t:"Reply all right away with a detailed breakdown of every risk and why it can't wait until Monday. It's after hours on a Friday.",type:"bad",result:"The CEO sees a lengthy reactive email sent Friday night. Your manager calls you Monday. 'That made us look unprepared. I needed you to assess before responding.'",tip:"Urgent information requires careful timing and tone. Friday evening isn't the moment for detailed critiques."},
+      {l:"B",t:"Send a brief reply acknowledging receipt and stating you'll prepare a response by Monday morning.",type:"pro",result:"Your manager and the CEO see a professional acknowledgment. Monday your analysis is thorough and constructive. The CEO notes to your manager that the team handles pressure well.",tip:"A calm acknowledgment provides reassurance and buys time to think clearly."},
+      {l:"C",t:"Forward the email to your team with 'urgent - thoughts?' and let everyone chime in over the weekend.",type:"bad",result:"Your manager receives multiple panicked responses by Monday. 'Why escalate before we discussed internally?' she asks.",tip:"Sharing urgent matters without context spreads alarm rather than solutions."},
+      {l:"D",t:"Spend the weekend analyzing and come in Monday with specific recommendations and a proposed action plan.",type:"pro",result:"Your manager is impressed. 'This is exactly what we needed.' Your recommendations are implemented, and the issue is resolved quickly.",tip:"Taking time to prepare a thoughtful response demonstrates professionalism under pressure."}
     ]
   },
   {
@@ -227,7 +227,8 @@ const PQ=[
 let mode=null,cur=0,sel=[],submitted=[];
 
 function gtc(t){return t==='pro'?'rp':t==='warn'?'rw':'rb';}
-function gtl(t){return t==='pro'?'Good call':t==='warn'?'Could be better':'Here is what happens';}
+const proPhrases = ["Nice", "Impressive", "Exceptional", "Very professional of you", "Excellent"];
+function gtl(t, index){return t==='pro'?proPhrases[index % proPhrases.length]:t==='warn'?'Could be better':'Here is what happens';}
 
 function setMode(m){
   mode=m;
@@ -277,15 +278,15 @@ function render(){
     const proC=sel.filter((s,i)=>s!==null&&qs[i].opts[s].type==='pro').length;
     const warnC=sel.filter((s,i)=>s!==null&&qs[i].opts[s].type==='warn').length;
     const badC=sel.filter((s,i)=>s!==null&&qs[i].opts[s].type==='bad').length;
+    const totalScore = proC * 1 + warnC * 0.5;
     let msg='';
-    if(proC>=9)msg='Excellent work!';
-    else if(proC>=7)msg='Good job!';
-    else if(proC>=5)msg='Not bad!';
+    if(totalScore >= 9)msg='Excellent work!';
+    else if(totalScore >= 7)msg='Good job!';
+    else if(totalScore >= 5)msg='Not bad!';
     else msg='Keep practicing!';
     area.innerHTML=`
       <div style="text-align:center;padding:1rem 0">
-        <div style="font-size:56px;font-weight:900;color:#0a1f44;line-height:1">${proC}/10</div>
-        <div style="font-size:14px;color:#666;margin:8px 0 14px">professional choices</div>
+        <div style="font-size:56px;font-weight:900;color:#0a1f44;line-height:1">${totalScore}/10</div>
         <div>${proC>0?`<span class="pill pp">${proC}</span>`:''} ${warnC>0?`<span class="pill pw">${warnC}</span>`:''} ${badC>0?`<span class="pill pbd">${badC}</span>`:''}</div>
         <p style="font-size:14px;color:#333;line-height:1.8;margin:16px auto;max-width:480px">${msg}</p>
         <div class="ref-box ${rc}"><strong>Next step</strong>Open the professionalism pamphlet and focus on the topics where you struggled.</div>
@@ -311,7 +312,7 @@ function render(){
 
   const submitHTML=isSubmitted
     ?`<div class="reveal ${gtc(q.opts[s].type)}">
-        <div class="rtitle">${gtl(q.opts[s].type)}</div>
+        <div class="rtitle">${gtl(q.opts[s].type, cur)}</div>
         <div class="rbody">${q.opts[s].result}</div>
         <div class="rtip">${q.opts[s].tip}</div>
       </div>`
@@ -351,6 +352,14 @@ document.addEventListener('keydown', function(e) {
     render();
   } else if (e.key === 'ArrowRight' && submitted[cur]) {
     cur++;
+    render();
+  } else if (e.key === 'ArrowUp' && !submitted[cur]) {
+    if (sel[cur] === null) sel[cur] = 0;
+    else if (sel[cur] > 0) sel[cur]--;
+    render();
+  } else if (e.key === 'ArrowDown' && !submitted[cur]) {
+    if (sel[cur] === null) sel[cur] = 0;
+    else if (sel[cur] < 3) sel[cur]++;
     render();
   } else if (e.key === 'Enter' && sel[cur] !== null && !submitted[cur]) {
     submitAnswer();
