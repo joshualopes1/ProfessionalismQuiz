@@ -1,3 +1,4 @@
+// Professionalism Quiz interactive logic
 const SQ=[
   {
     topic:"Punctuality",diff:"easy",
@@ -94,7 +95,7 @@ const SQ=[
     opts:[
       {l:"A",t:"Say 'that's not going to work' and explain your idea as the better option.",type:"bad",result:"The newer student goes quiet and barely participates the rest of the session. Your idea gets used but the group dynamic is off for the rest of the meeting. You were right about the idea and handled everything else wrong.",tip:"Being right and being respectful aren't mutually exclusive. You can do both."},
       {l:"B",t:"Say nothing, let them go with the bad idea, and plan to point it out later when it fails.",type:"bad",result:"It fails. Saying 'I told you so' in real life is somehow even less satisfying than it sounds. The group wasted time and you sat there watching it happen.",tip:"Staying quiet to protect yourself while the group goes in the wrong direction is not a neutral move. It's a choice."},
-      {l:"C",t:"Ask a question like 'how would this hold up if the professor changes the prompt?' and let the group work through it.",type:"pro",result:"The group starts picking at the idea on their own and naturally ends up somewhere better. The newer student actually helps revise it. Your question did more than your opinion would have.",tip:"A good question usually lands better than a direct criticism. It lets people come to the conclusion themselves."},
+      {l:"C",t:"Instead of shutting it down, ask a question that gets everyone thinking.",type:"pro",result:"The group starts picking at the idea on their own and naturally ends up somewhere better. The newer student actually helps revise it. Your question did more than your opinion would have.",tip:"A good question usually lands better than a direct criticism. It lets people come to the conclusion themselves."},
       {l:"D",t:"Compliment the idea and then bring yours up as another option to consider.",type:"pro",result:"The group ends up combining parts of both ideas. The final version is stronger than either one on its own. The newer student feels included. It worked out.",tip:"Making space for more than one idea to exist often gets you to a better outcome than just pushing for yours."}
     ]
   },
@@ -303,9 +304,11 @@ function render(){
   const q=qs[cur];
   const s=sel[cur];
   const isSubmitted=submitted[cur];
+  const userOpt = isSubmitted ? q.opts[s] : null;
+  const userType = userOpt ? userOpt.type : null;
 
   const optsHTML=q.opts.map((o,i)=>`
-    <div class="opt${s===i&&!isSubmitted?' '+pickClass:s===i&&isSubmitted?' '+pickClass:''}${isSubmitted && o.type === 'pro' ? ' correct' : ''}" onclick="${isSubmitted?'':' choose('+i+')'}" style="${isSubmitted&&s!==i?'opacity:0.5;cursor:default':''}">
+    <div class="opt${s===i&&!isSubmitted?' '+pickClass:s===i&&isSubmitted?' '+pickClass:''}${isSubmitted && o.type === 'pro' ? ' correct' : ''}${s===i && isSubmitted && userType !== 'pro' ? ' wrong' : ''}" onclick="${isSubmitted?'':' choose('+i+')'}" style="${isSubmitted&&s!==i?'opacity:0.5;cursor:default':''}">
       <div class="ol">${o.l}</div>
       <div class="ot">${o.t}</div>
     </div>`).join('');
@@ -329,11 +332,8 @@ function render(){
         <div class="rbody">${userOpt.result}</div>
         <div class="rtip">${userOpt.tip}</div>
       </div>
-      <div class="reveal rp">
-        <div class="rtitle">Correct choice: ${gtl('pro', cur)}</div>
-        <div class="rbody">${correctOpt.result}</div>
-        <div class="rtip">${correctOpt.tip}</div>
-      </div>
+      <div style="color: green; font-weight: bold; margin-top: 14px;">How the correct answer is better:</div>
+      <div style="color: green; margin-bottom: 14px;">${correctOpt.tip}</div>
     `;
         }
       })()
